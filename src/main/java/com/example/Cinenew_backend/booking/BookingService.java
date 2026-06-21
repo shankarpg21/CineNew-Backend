@@ -110,7 +110,8 @@ public class BookingService {
     }
 
     public List<BookingResponseDTO> getShowBookings(Long showId){
-        Show show=showRepository.findById(showId).orElseThrow(()->new InvalidShowException("Invalid show id"));
+        Optional<Show> show=showRepository.findById(showId);
+        if(show.isEmpty()) throw new InvalidShowException("Invalid show id");
         List<Booking> bookings=bookingRepository.getShowBookings(showId);
         List<BookingResponseDTO> resp=new ArrayList<>();
         for(Booking b:bookings){
