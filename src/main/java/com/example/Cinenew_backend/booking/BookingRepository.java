@@ -21,6 +21,9 @@ public interface BookingRepository extends JpaRepository<Booking,Long>{
     @Query(value="update booking set status='CANCELLED',cancelled_by='ADMIN',cancelled_at=NOW() where show_id=:showId and status='CONFIRMED'",nativeQuery = true)
     public int cancelBookings(@Param("showId") Long showId);
 
-    @Query(value="select b.bookingId,b.status,b.bookedAt,b.cancelledAt,b.cancelledBy,s.seatName,m.movieName,sh.showId,sh.showDate,sh.showTime,sc.screenName from Booking b join b.seatName ss join ss.seat s join b.show sh join sh.screen sc join sh.movie m")
-    public List<?> getUserBookings(@Param("userId") Long userId);
+    @Query(nativeQuery =true,value="select * from booking where user_id=:userId")
+    public List<Booking> getUserBookings(@Param("userId") Long userId);
+
+    @Query(nativeQuery =true,value="select * from booking where show_id=:showId")
+    public List<Booking> getShowBookings(@Param("showId") Long show_id);
 } 

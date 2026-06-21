@@ -1,6 +1,7 @@
 package com.example.Cinenew_backend.movie;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,6 +21,7 @@ public class MovieController {
         this.movieService=movieService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/addMovie")
     public ResponseEntity<Object> addMovie(@RequestParam(required = true) String email,@Valid @RequestBody MovieRequestDTO movieRequestDTO){
         String resp=movieService.addMovies(email, movieRequestDTO);

@@ -21,6 +21,9 @@ public interface ShowSeatRepository extends JpaRepository<ShowSeat,Long>{
 
     @Query(value = "select * from show_seat where show_id=:showId and seat_id in (:seatIds)",nativeQuery = true)
     public List<ShowSeat> findByShowSeatId(@Param("showId") Long showId,@Param("seatIds") List<Long> seatIds);
+
+    @Query(value="select s.seat_name from show_seat ss join seat s on ss.seat_id=s.seat_id where ss.booking_id=:bookingId",nativeQuery = true)
+    public List<String> findSeatsByBookings(@Param("bookingId") Long bookingId);
     
     @Transactional
     @Modifying

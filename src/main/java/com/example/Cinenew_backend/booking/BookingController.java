@@ -1,6 +1,7 @@
 package com.example.Cinenew_backend.booking;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,19 +22,28 @@ public class BookingController {
         this.bookingService=bookingService;
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping("/bookShows")
     public ResponseEntity<Object> bookShows(@Valid @RequestBody BookingRequestDTO bookingRequestDTO){
         return ResponseEntity.ok(bookingService.bookShows(bookingRequestDTO));
     } 
 
+    @PreAuthorize("hasRole('USER')")
     @DeleteMapping("/cancelTicket/{bookingId}")
     public ResponseEntity<Object> cancelTicket(@PathVariable Long bookingId){
         return ResponseEntity.ok(bookingService.cancelTicket(bookingId));
     }
 
-    @GetMapping("/getUserBookings/{userId}")
-    public ResponseEntity<Object> getBookingsByUserId(@PathVariable Long userId){
-        return ResponseEntity.ok(bookingService.getUserBookings(userId));
+    @PreAuthorize("hasRole('USER')")
+    @GetMapping("/getUserBookings")
+    public ResponseEntity<Object> getBookingsByUserId(){
+        return ResponseEntity.ok(bookingService.getUserBookings());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/getShowBookings/{showId}")
+    public ResponseEntity<Object> getBookingsByShowId(@PathVariable Long showId){
+        return ResponseEntity.ok(bookingService.getShowBookings(showId));
     }
 }
 

@@ -4,6 +4,7 @@ package com.example.Cinenew_backend.user;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.Cinenew_backend.config.JwtUtil;
 import com.example.Cinenew_backend.enumData.Role;
 import com.example.Cinenew_backend.exception.InvalidCredentialsException;
 import com.example.Cinenew_backend.exception.UserAlreadyExistsException;
@@ -15,9 +16,11 @@ public class UserService {
     
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
 
-    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder){
+    public UserService(UserRepository userRepository,PasswordEncoder passwordEncoder,JwtUtil jwtUtil){
         this.userRepository=userRepository;
+        this.jwtUtil=jwtUtil;
         this.passwordEncoder=passwordEncoder;
     }
     public String register(UserRequestDTO userRequestDTO){
@@ -36,6 +39,8 @@ public class UserService {
     public String login(UserLoginRequestDTO userLoginRequestDTO){
         User user=userRepository.findByEmail(userLoginRequestDTO.getEmail());
         if(user==null||!passwordEncoder.matches(userLoginRequestDTO.getPassword(), user.getPassword())) throw new InvalidCredentialsException("Invalid Credentials");
-        return "Login successful";
+        Role role=user.getRole();
+        String token=jwtUtil.generateToken(user.getUserId(), role);
+        return token;
     }
 }

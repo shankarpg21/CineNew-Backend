@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BookingRequestDTO {
     
-    private Long userId;
     
     @NotNull(message = "Show id is missing")
     private Long showId;

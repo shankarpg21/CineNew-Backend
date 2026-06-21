@@ -2,11 +2,13 @@ package com.example.Cinenew_backend.booking;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.Cinenew_backend.enumData.CancelledBy;
@@ -60,7 +62,8 @@ public class BookingService {
         booking.setSeatName(seatDetails);
         booking.setBookedAt(LocalDateTime.now());
         booking.setStatus(TicketStatus.CONFIRMED);
-        booking.setUserId(bookingRequestDTO.getUserId());
+        Long userId=(Long)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        booking.setUserId(userId);
         Booking ticket=bookingRepository.save(booking);
         BookingResponseDTO res=new BookingResponseDTO();
         res.setBookingId(ticket.getBookingId());
@@ -87,8 +90,41 @@ public class BookingService {
         return "Booking cancelled succesfully";
     }
 
-    public List<?> getUserBookings(Long userId){
-        List<?> bookings=bookingRepository.getUserBookings(userId);
-        return bookings;
+    public List<?> getUserBookings(){
+        Long userId=(Long)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        List<Booking> bookings=bookingRepository.getUserBookings(userId);
+        List<BookingResponseDTO> resp=new ArrayList<>();
+        for(Booking b:bookings){
+            BookingResponseDTO bookingResponseDTO=new BookingResponseDTO();
+            List<String> seatDetails=showSeatRepository.findSeatsByBookings(b.getBookingId());
+            bookingResponseDTO.setBookedSeats(seatDetails);
+            bookingResponseDTO.setBookingId(b.getBookingId());
+            bookingResponseDTO.setMovieName(b.getShow().getMovie().getMovieName());
+            bookingResponseDTO.setScreenName(b.getShow().getScreen().getScreenName());
+            bookingResponseDTO.setShowDate(b.getShow().getShowDate());
+            bookingResponseDTO.setShowTime(b.getShow().getShowTime());
+            bookingResponseDTO.setStatus(b.getStatus());
+            resp.add(bookingResponseDTO);
+        }
+        return resp;
+    }
+
+    public List<BookingResponseDTO> getShowBookings(Long showId){
+        Show show=showRepository.findById(showId).orElseThrow(()->new InvalidShowException("Invalid show id"));
+        List<Booking> bookings=bookingRepository.getShowBookings(showId);
+        List<BookingResponseDTO> resp=new ArrayList<>();
+        for(Booking b:bookings){
+            BookingResponseDTO bookingResponseDTO=new BookingResponseDTO();
+            List<String> seatDetails=showSeatRepository.findSeatsByBookings(b.getBookingId());
+            bookingResponseDTO.setBookedSeats(seatDetails);
+            bookingResponseDTO.setBookingId(b.getBookingId());
+            bookingResponseDTO.setMovieName(b.getShow().getMovie().getMovieName());
+            bookingResponseDTO.setScreenName(b.getShow().getScreen().getScreenName());
+            bookingResponseDTO.setShowDate(b.getShow().getShowDate());
+            bookingResponseDTO.setShowTime(b.getShow().getShowTime());
+            bookingResponseDTO.setStatus(b.getStatus());
+            resp.add(bookingResponseDTO);
+        }
+        return resp;
     }
 }

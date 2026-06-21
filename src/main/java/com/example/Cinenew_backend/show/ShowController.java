@@ -1,6 +1,7 @@
 package com.example.Cinenew_backend.show;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +25,7 @@ public class ShowController {
         this.showService=showService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/addShow")
     public ResponseEntity<Object> addShows(@RequestParam(required = true) String email,@Valid @RequestBody ShowRequestDTO showRequestDTO){
         String resp=showService.addShows(email,showRequestDTO);
@@ -40,6 +42,7 @@ public class ShowController {
         return ResponseEntity.ok(showService.getShowScreen(showId));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("cancelShow/{showId}")
     public ResponseEntity<Object> deleteShow(@PathVariable Long showId){
         return ResponseEntity.ok(showService.cancelShow(showId));
