@@ -17,6 +17,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.LockModeType;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -35,6 +36,7 @@ import lombok.Setter;
         @UniqueConstraint(columnNames = {"show_id", "seat_id"})
     }
 )
+
 public class ShowSeat {
     
     @Id

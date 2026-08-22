@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import com.example.Cinenew_backend.show.dto.ShowSeatResponseDTO;
 
+import jakarta.persistence.LockModeType;
 import jakarta.transaction.Transactional;
 
 @Repository
@@ -27,6 +29,7 @@ public interface ShowSeatRepository extends JpaRepository<ShowSeat,Long>{
     
     @Transactional
     @Modifying
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = "update show_seat set seat_status='LOCKED', hold_expiry=:holdExpiry where seat_id in (:showSeats) and show_id=:showId and seat_status='AVAILABLE'",nativeQuery=true)
     public int updateSeats(@Param("showId") Long showId,@Param("showSeats") List<Long> showSeats,@Param("holdExpiry") LocalDateTime holdExpiry);
 
