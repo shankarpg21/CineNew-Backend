@@ -1,0 +1,31 @@
+services:
+    mysql:
+        image: mysql:8.0
+        container_name: CinenewSQL
+        environment:
+            MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: Cinenew
+        volumes: 
+            - mysql_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pKeerthivasan"]
+            interval: 5s
+            timeout: 5s
+            retries: 10
+
+
+    backend:
+        build: .
+        container_name: cinenew-container
+        environment:
+            DB_URL: ${DB_URL}
+            DB_PASSWORD: ${DB_PASSWORD}
+            JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+        ports:
+          - "8080:8080"
+        depends_on:
+            mysql: 
+             condition: service_healthy
+
+volumes:
+    mysql_data: 
